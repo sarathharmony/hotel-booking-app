@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ace-engine.dev/ace.schema.v3.json",
+  "version": 3,
+  "name": "hotel-booking",
+  "description": "Hotel booking PaaS — rooms, availability and reservations. Built by the DevLay agent; sold as a managed PaaS.",
+  "instance_init": {
+    "setup_script": "ace-setup.sh"
+  },
+  "stack": {
+    "languages": ["typescript"],
+    "framework": "node+react"
+  },
+  "deployment_strategy": "progressive",
+  "services": []
+}
