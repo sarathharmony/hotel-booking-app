@@ -1,0 +1,14 @@
+{
+  "name": "hotel-booking",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:api": "pnpm --filter @hotel-booking/api dev",
+    "dev:web": "pnpm --filter @hotel-booking/web dev",
+    "build": "pnpm run -r build",
+    "start:api": "pnpm --filter @hotel-booking/api start"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

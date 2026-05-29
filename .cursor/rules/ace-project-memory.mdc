@@ -1,0 +1,79 @@
+---
+description: ACE Project Memory - update after every task
+globs:
+alwaysApply: true
+---
+
+# ACE Project Memory
+
+You have access to a structured project backlog via REST API. After completing work,
+you MUST record what you did by creating or updating project memory items.
+
+## Human actor (MANDATORY)
+
+The person using DevLay for this run is: **sarath@harmonyflow.ai**
+
+- Set **author** to this name (or their email, if that is their identity in ACE).
+- Put the same in **contributors** for work they did, plus any other humans.
+- **Never** use the literal `cursor-agent`, the word `Cursor` as a stand-in, any CLI
+  or model name, or "the agent" for **author** or as the only contributor. The "queue" is
+  an internal engine concept — the human in DevLay is who you attribute.
+
+## Git branch (for `branch` / `branches` fields)
+
+Run `git branch --show-current` and use **that** exact string. Do not invent a branch name.
+If the repository still uses `master` as the current branch, record `master`. If the default
+is `main`, you will see `main`. (Renaming the default branch in git is a human/CI concern.)
+
+## API Reference (all endpoints relative to the engine at http://localhost:3002)
+
+### Full backlog
+GET /api/project-memory
+
+### Epics (large initiatives)
+GET    /api/project-memory/epics
+POST   /api/project-memory/epics           { title, description, author, contributors?, status?, branches? }
+GET    /api/project-memory/epics/:id
+PUT    /api/project-memory/epics/:id        { title?, description?, status?, author?, contributors?, branches? }
+DELETE /api/project-memory/epics/:id
+
+### Stories (feature-level work)
+GET    /api/project-memory/stories          ?epic_id=<filter>
+POST   /api/project-memory/stories          { title, description, author, contributors?, epic_id?, status?, branches?, tested? }
+GET    /api/project-memory/stories/:id
+PUT    /api/project-memory/stories/:id      { title?, description?, status?, author?, contributors?, epic_id?, branches?, tested? }
+DELETE /api/project-memory/stories/:id
+
+### Tasks (smallest unit of work)
+GET    /api/project-memory/tasks            ?story_id=<filter>
+POST   /api/project-memory/tasks            { title, description, author, contributors?, story_id?, status?, branch?, tested?, files_changed?, commit_hash?, queue_id?, thread_id? }
+PUT    /api/project-memory/tasks/:id        { title?, description?, status?, author?, contributors?, branch?, tested?, files_changed?, commit_hash? }
+DELETE /api/project-memory/tasks/:id
+
+### Branch queries
+GET /api/project-memory/branches/:branch
+
+### Search
+GET /api/project-memory/search?q=<query>
+
+### Discussion channels
+POST /api/project-memory/discuss/:item_type/:item_id  (idempotent - creates or returns existing discussion channel)
+
+## Fields (API body)
+
+- **author**: The primary **human** owner — must match the Human actor section above, not a bot/CLI name.
+- **contributors**: Human contributors for this item; same rule as **author** when the human did the work.
+- **discussion_channel_id**: (read-only) Set automatically when a discussion is started for an item.
+
+## Status values
+backlog, in_progress, done, cancelled
+
+## Workflow
+
+1. Before starting, run `curl -s http://localhost:3002/api/project-memory` to see existing work items.
+2. After completing your work, create a Task for each distinct change (include files_changed, branch, your queue_id).
+3. If this task is part of a larger feature, create or update a Story to group related Tasks.
+4. If there is a larger initiative, create or link to an Epic.
+5. Set status to "done" for completed items and "in_progress" for ongoing work.
+6. For **branch** / **branches**: use the real branch from `git branch --show-current` (see Git branch section). Do not invent names.
+7. For **author** and **contributors**: use the Human actor / humans only — not `cursor-agent` or the queue label.

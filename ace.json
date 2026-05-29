@@ -11,5 +11,17 @@
     "framework": "node+react"
   },
   "deployment_strategy": "progressive",
-  "services": []
+  "services": [
+    {
+      "name": "api",
+      "type": "server",
+      "port": 4100,
+      "health_check": "/api/health"
+    },
+    {
+      "name": "web",
+      "type": "static",
+      "port": 5174
+    }
+  ]
 }
